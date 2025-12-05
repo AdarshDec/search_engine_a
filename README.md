@@ -1,8 +1,8 @@
-# Search Engine MVP
+# Simple Search Engine
 
 A fully functional search engine built from scratch using Python, demonstrating core information retrieval concepts.
 
-## 🎯 What This Teaches You
+## 🎯 What This Project is About
 
 This project implements the **fundamental concepts** that power all search engines:
 
@@ -202,11 +202,6 @@ Want to extend this? Here are ideas:
 9. **Caching** - Cache frequent queries
 10. **Distributed Search** - Scale across multiple servers
 
-## 📖 Learning Resources
-
-- **"Introduction to Information Retrieval"** by Manning, Raghavan, Schütze
-- **Elasticsearch** - Production search engine (study its architecture)
-- **Whoosh** - Python search library (see how professionals do it)
 
 ## 🐛 Troubleshooting
 
@@ -223,9 +218,8 @@ Make sure sample documents loaded. Check server logs on startup.
 
 ## 📝 License
 
-This is an educational project. Feel free to use and modify as needed!
+Feel free to use and modify as needed!
 
 ---
 
-**Built with ❤️ to teach search engine fundamentals**
 
