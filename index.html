@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Engine MVP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+
+        .result-item {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .result-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .result-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .result-snippet {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .result-score {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            flex: 1;
+            min-width: 150px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Search Engine MVP</h1>
+            <p>Built with FastAPI, TF-IDF Ranking, and Inverted Index</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Search Section -->
+            <div class="card">
+                <h2>Search Documents</h2>
+                <div class="search-box">
+                    <input type="text" id="searchQuery" placeholder="Enter your search query..." onkeypress="handleSearchKeyPress(event)">
+                    <button class="btn" onclick="performSearch()">Search</button>
+                </div>
+                <div id="searchResults" class="results"></div>
+            </div>
+
+            <!-- Add Document Section -->
+            <div class="card">
+                <h2>Add New Document</h2>
+                <form id="addDocumentForm" onsubmit="addDocument(event)">
+                    <div class="form-group">
+                        <label for="docTitle">Title:</label>
+                        <input type="text" id="docTitle" required placeholder="Document title">
+                    </div>
+                    <div class="form-group">
+                        <label for="docContent">Content:</label>
+                        <textarea id="docContent" required placeholder="Document content..."></textarea>
+                    </div>
+                    <button type="submit" class="btn">Add Document</button>
+                </form>
+                <div id="addMessage"></div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="card">
+            <h2>Search Engine Statistics</h2>
+            <div id="stats" class="stats">
+                <div class="loading">Loading statistics...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+
+        // Load stats on page load
+        window.onload = function() {
+            loadStats();
+        };
+
+        // Handle Enter key in search box
+        function handleSearchKeyPress(event) {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        }
+
+        // Perform search
+        async function performSearch() {
+            const query = document.getElementById('searchQuery').value.trim();
+            const resultsDiv = document.getElementById('searchResults');
+
+            if (!query) {
+                resultsDiv.innerHTML = '<div class="message error">Please enter a search query</div>';
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div class="loading">Searching...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+                    let html = `<h3 style="margin-bottom: 15px; color: #333;">Found ${data.count} result(s) for "${data.query}"</h3>`;
+                    data.results.forEach(result => {
+                        html += `
+                            <div class="result-item">
+                                <div class="result-title">${escapeHtml(result.title)}</div>
+                                <div class="result-snippet">${escapeHtml(result.snippet)}</div>
+                                <div>
+                                    <span class="result-score">Score: ${result.score}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    resultsDiv.innerHTML = html;
+                } else {
+                    resultsDiv.innerHTML = `<div class="message">No results found for "${data.query}"</div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="message error">Error: ${error.message}</div>`;
+            }
+
+            // Reload stats after search
+            loadStats();
+        }
+
+        // Add document
+        async function addDocument(event) {
+            event.preventDefault();
+            const messageDiv = document.getElementById('addMessage');
+            const title = document.getElementById('docTitle').value;
+            const content = document.getElementById('docContent').value;
+
+            messageDiv.innerHTML = '<div class="loading">Adding document...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/documents`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.innerHTML = `<div class="message success">Document "${data.title}" added successfully! (ID: ${data.id})</div>`;
+                    document.getElementById('addDocumentForm').reset();
+                    loadStats();
+                } else {
+                    messageDiv.innerHTML = `<div class="message error">Error: ${data.detail || 'Failed to add document'}</div>`;
+                }
+            } catch (error) {
+                messageDiv.innerHTML = `<div class="message error">Error: ${error.message}</div>`;
+            }
+        }
+
+        // Load statistics
+        async function loadStats() {
+            const statsDiv = document.getElementById('stats');
+
+            try {
+                const response = await fetch(`${API_BASE}/stats`);
+                const data = await response.json();
+
+                statsDiv.innerHTML = `
+                    <div class="stat-item">
+                        <div class="stat-value">${data.total_documents}</div>
+                        <div class="stat-label">Documents</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.total_words_indexed}</div>
+                        <div class="stat-label">Words Indexed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.unique_words}</div>
+                        <div class="stat-label">Unique Words</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.average_words_per_document}</div>
+                        <div class="stat-label">Avg Words/Doc</div>
+                    </div>
+                `;
+            } catch (error) {
+                statsDiv.innerHTML = `<div class="message error">Error loading stats: ${error.message}</div>`;
+            }
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
+
